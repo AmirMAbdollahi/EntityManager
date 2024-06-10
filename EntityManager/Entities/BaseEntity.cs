@@ -1,4 +1,4 @@
-namespace EntityManager;
+namespace EntityManager.Entities;
 
 public class BaseEntity<T>
 {

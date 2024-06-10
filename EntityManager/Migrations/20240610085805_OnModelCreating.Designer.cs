@@ -3,6 +3,7 @@ using EntityManager.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityManager.Migrations
 {
     [DbContext(typeof(EntityMangerDbContext))]
-    partial class EntityMangerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240610085805_OnModelCreating")]
+    partial class OnModelCreating
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,7 +24,7 @@ namespace EntityManager.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EntityManager.Entities.Author", b =>
+            modelBuilder.Entity("EntityManager.Author", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,15 +37,14 @@ namespace EntityManager.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("EntityManager.Entities.Book", b =>
+            modelBuilder.Entity("EntityManager.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,8 +60,7 @@ namespace EntityManager.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Price")
                         .HasColumnType("int");
@@ -73,7 +74,7 @@ namespace EntityManager.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("EntityManager.Entities.Library", b =>
+            modelBuilder.Entity("EntityManager.Library", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -83,28 +84,26 @@ namespace EntityManager.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Libraries");
                 });
 
-            modelBuilder.Entity("EntityManager.Entities.Book", b =>
+            modelBuilder.Entity("EntityManager.Book", b =>
                 {
-                    b.HasOne("EntityManager.Entities.Author", "Author")
+                    b.HasOne("EntityManager.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EntityManager.Entities.Library", "Library")
+                    b.HasOne("EntityManager.Library", "Library")
                         .WithMany("Books")
                         .HasForeignKey("LibraryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -115,12 +114,12 @@ namespace EntityManager.Migrations
                     b.Navigation("Library");
                 });
 
-            modelBuilder.Entity("EntityManager.Entities.Author", b =>
+            modelBuilder.Entity("EntityManager.Author", b =>
                 {
                     b.Navigation("Books");
                 });
 
-            modelBuilder.Entity("EntityManager.Entities.Library", b =>
+            modelBuilder.Entity("EntityManager.Library", b =>
                 {
                     b.Navigation("Books");
                 });
