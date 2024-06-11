@@ -21,61 +21,32 @@ public class EntityMangerDbContext : DbContext
         base.OnConfiguring(optionsBuilder);
     }
 
-    public DbSet<Book> Books { get; set; }
-    public DbSet<Author> Authors { get; set; }
-    public DbSet<Library> Libraries { get; set; }
+    // public DbSet<Blog> Blogs { get; set; }
+    // public DbSet<Post> Posts { get; set; }
+    // public DbSet<Comment> Comments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Book>()
-            .HasOne(b => b.Author)
-            .WithMany(a => a.Books)
-            .HasForeignKey(b => b.AuthorId);
-
-        modelBuilder.Entity<Book>()
-            .HasOne(b => b.Library)
-            .WithMany(l => l.Books)
-            .HasForeignKey(a => a.LibraryId);
-
-        modelBuilder.Entity<Author>(entity =>
+        modelBuilder.Entity<Blog>(entity =>
         {
-            entity.HasKey(a => a.Id);
-            entity.Property(a => a.Name)
-                .IsRequired()
-                .HasMaxLength(50);
-            entity.Property(a => a.Age)
-                .IsRequired();
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Url).IsRequired().HasColumnType("varchar");
         });
-
-        modelBuilder.Entity<Library>(entity =>
+        modelBuilder.Entity<Post>(entity =>
         {
-            entity.HasKey(l => l.Id);
-            entity.Property(l => l.Name)
-                .IsRequired()
-                .HasMaxLength(50);
-            entity.Property(l => l.Address)
-                .HasMaxLength(100);
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.PictureUrl).IsRequired(false).HasColumnType("varchar");
+            entity.HasOne(p => p.Blog)
+                .WithMany(b => b.Posts)
+                .HasForeignKey(p => p.BlogId);
         });
-
-        modelBuilder.Entity<Book>(entity =>
+        modelBuilder.Entity<Comment>(entity =>
         {
-            entity.HasKey(b => b.Id);
-
-            entity.Property(b => b.Name)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.HasOne(b => b.Author)
-                .WithMany(a => a.Books)
-                .HasForeignKey(b => b.AuthorId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
-
-            entity.HasOne(b => b.Library)
-                .WithMany(l => l.Books)
-                .HasForeignKey(b => b.LibraryId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.Text).IsRequired().HasMaxLength(500).HasColumnType("Nvarchar");
+            entity.HasOne(c => c.Post)
+                .WithMany(p => p.Comments)
+                .HasForeignKey(c => c.PostId);
         });
     }
 }
