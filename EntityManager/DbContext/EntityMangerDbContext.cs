@@ -21,32 +21,35 @@ public class EntityMangerDbContext : DbContext
         base.OnConfiguring(optionsBuilder);
     }
 
-    // public DbSet<Blog> Blogs { get; set; }
-    // public DbSet<Post> Posts { get; set; }
-    // public DbSet<Comment> Comments { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<OrderProduct> OrderProduct { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Blog>(entity =>
+        modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Url).IsRequired().HasColumnType("varchar");
+            entity.HasKey(o => o.Id);
+            entity.Property(o => o.Time).IsRequired(false).HasColumnType("datetime");
         });
-        modelBuilder.Entity<Post>(entity =>
+
+        modelBuilder.Entity<Product>(entity =>
         {
             entity.HasKey(p => p.Id);
-            entity.Property(p => p.PictureUrl).IsRequired(false).HasColumnType("varchar");
-            entity.HasOne(p => p.Blog)
-                .WithMany(b => b.Posts)
-                .HasForeignKey(p => p.BlogId);
+            entity.Property(p => p.Name).IsRequired().HasMaxLength(50).HasColumnType("varchar");
         });
-        modelBuilder.Entity<Comment>(entity =>
+
+        modelBuilder.Entity<OrderProduct>(entity =>
         {
-            entity.HasKey(c => c.Id);
-            entity.Property(c => c.Text).IsRequired().HasMaxLength(500).HasColumnType("Nvarchar");
-            entity.HasOne(c => c.Post)
-                .WithMany(p => p.Comments)
-                .HasForeignKey(c => c.PostId);
+            entity.HasKey(op => new { op.OrderId, op.ProductId });
+            
+            entity.HasOne(op => op.Order)
+                .WithMany(o => o.Products)
+                .HasForeignKey(op => op.OrderId);
+
+            entity.HasOne(op => op.Product)
+                .WithMany(p => p.Orders)
+                .HasForeignKey(op => op.ProductId);
         });
     }
 }
